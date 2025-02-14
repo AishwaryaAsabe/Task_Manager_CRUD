@@ -3,10 +3,29 @@ import Task from '../../../models/Task';
 import connectToDatabase from '@/config/db';
 
 // Update a task
+
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   await connectToDatabase();
-  const updatedTask = await Task.findByIdAndUpdate(params.id, await req.json(), { new: true });
-  return NextResponse.json(updatedTask);
+
+  const id = params?.id; // Correctly extracting the ID
+
+  if (!id) {
+    return NextResponse.json({ message: "Task ID is required" }, { status: 400 });
+  }
+
+  try {
+    const body = await req.json(); // Ensure request body is parsed
+    const updatedTask = await Task.findByIdAndUpdate(id, body, { new: true });
+
+    if (!updatedTask) {
+      return NextResponse.json({ message: "Task not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedTask);
+  } catch (error) {
+    console.error("Error updating task:", error);
+    return NextResponse.json({ message: "Error updating task" }, { status: 500 });
+  }
 }
 
 
