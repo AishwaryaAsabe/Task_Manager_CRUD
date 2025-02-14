@@ -1,3 +1,5 @@
+// 
+
 "use client"; 
 
 import { useState, useEffect } from "react";
@@ -10,7 +12,6 @@ interface Task {
 
 const EditTask = ({ taskId }: { taskId: string }) => { 
   const router = useRouter();
-  const [task, setTask] = useState<Task | null>(null);
   const [title, setTitle] = useState("");
 
   useEffect(() => {
@@ -22,7 +23,6 @@ const EditTask = ({ taskId }: { taskId: string }) => {
         if (!response.ok) throw new Error("Failed to fetch task");
 
         const data = await response.json();
-        setTask(data);
         setTitle(data.title);
       } catch (error) {
         console.error("Error fetching task:", error);
