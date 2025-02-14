@@ -5,10 +5,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-interface Task {
-  _id: string;
-  title: string;
-}
+// interface Task {
+//   _id: string;
+//   title: string;
+// }
 
 const EditTask = ({ taskId }: { taskId: string }) => { 
   const router = useRouter();
