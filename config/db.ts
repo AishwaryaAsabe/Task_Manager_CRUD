@@ -7,14 +7,16 @@ if (!MONGO_URI) {
 }
 
 const connectToDatabase = async () => {
+  // Check if already connected
   if (mongoose.connection.readyState >= 1) {
     console.log("✅ Already connected to MongoDB");
     return;
   }
 
   try {
+    // Connect to MongoDB with options
     await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 50000, // 50 seconds to find a server
+      serverSelectionTimeoutMS: 5000, // 5 seconds to find a server
       socketTimeoutMS: 45000, // 45 seconds timeout for operations
     });
 

@@ -1,14 +1,21 @@
-"use client"; 
-
-import EditTask from "../../components/EditTask"; 
+"use client";
+import { useEffect } from "react";
+import EditTask from "@/app/components/EditTask";
 import { useParams } from "next/navigation";
 
 const EditTaskPage = () => {
-  const { id } = useParams(); 
+    const params = useParams();
+    const taskId = params?.id as string;
 
-  if (!id) return <p>Loading...</p>; 
+    useEffect(() => {
+        console.log("🔹 Params:", params);
+    }, [params]);
 
-  return <EditTask taskId={id as string} />; 
+    if (!taskId) {
+        return <p>Loading...</p>; // Allow time for params to populate
+    }
+
+    return <EditTask taskId={taskId} />;
 };
 
 export default EditTaskPage;

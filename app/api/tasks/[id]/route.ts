@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
-import Task from "../../../models/Task"; 
-import connectToDatabase from "@/config/db"; 
+import { NextRequest, NextResponse } from "next/server";
+import Task from "../../../models/Task"; // Ensure correct path
+import connectToDatabase from "@/config/db";
 
-
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectToDatabase();
 
-  const id = params?.id; 
+  // Await the `params` object
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json({ message: "Task ID is required" }, { status: 400 });
   }
 
   try {
-    const body = await req.json(); 
+    const body = await req.json();
     const updatedTask = await Task.findByIdAndUpdate(id, body, { new: true });
 
     if (!updatedTask) {
@@ -28,10 +28,49 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+
+
+
+
+
+
+
+// export async function PUT(req: Request, context: { params: { id?: string } }) {
+//   await connectToDatabase();
+
+//   try {
+//     const id = context?.params?.id; // Ensure params is accessed correctly
+//     if (!id) {
+//       return NextResponse.json({ error: 'Missing task ID' }, { status: 400 });
+//     }
+
+//     const body = await req.json();
+//     const updatedTask = await Task.findByIdAndUpdate(id, body, { new: true });
+
+//     if (!updatedTask) {
+//       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+//     }
+
+//     return NextResponse.json(updatedTask);
+//   } catch (error) {
+//     console.error('❌ Error updating task:', error);
+//     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+//   }
+// }
+
+
+
+
+
+
+
+
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectToDatabase();
 
-  const id = params?.id; 
+  // Await the `params` object
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json({ message: "Task ID is required" }, { status: 400 });
