@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
-const EditTask = ({ params }: { params: { taskId: string } }) => {
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+
+const EditTask = () => {
+  const { taskId } = useParams(); // ✅ Use `useParams()` to get taskId
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const router = useRouter();
@@ -10,7 +12,8 @@ const EditTask = ({ params }: { params: { taskId: string } }) => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const res = await fetch(`/api/tasks/${params.taskId}`);
+        if (!taskId) return;
+        const res = await fetch(`/api/tasks/${taskId}`);
         const data = await res.json();
         setTitle(data.title);
         setDescription(data.description);
@@ -20,11 +23,11 @@ const EditTask = ({ params }: { params: { taskId: string } }) => {
     };
 
     fetchTask();
-  }, [params.taskId]);
+  }, [taskId]);
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`/api/tasks/${params.taskId}`, {
+      const res = await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, description }),

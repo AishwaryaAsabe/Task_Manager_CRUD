@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import Task from "../../../models/Task"; // Ensure correct path
+import Task from "@/app/models/Task";
 import connectToDatabase from "@/config/db";
 
-
-
+// Fix: Use async for params
 export async function GET(req: NextRequest, context: { params: Promise<{ taskId: string }> }) {
   await connectToDatabase();
 
-  
-  const { taskId } = await context.params;
-
-  if (!taskId) {
-    return NextResponse.json({ message: "Task ID is missing" }, { status: 400 });
-  }
+  const { taskId } = await context.params; // ✅ Await params since it's a Promise
 
   try {
     const task = await Task.findById(taskId);
@@ -26,32 +20,37 @@ export async function GET(req: NextRequest, context: { params: Promise<{ taskId:
   }
 }
 
-
-
-
-
-// UPDATE a specific task
-export async function PUT(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ taskId: string }> }) {
   await connectToDatabase();
-  const { taskId } = params;
+
+  const { taskId } = await context.params; // ✅ Await params since it's a Promise
+
+  if (!taskId) {
+    return NextResponse.json({ message: "Task ID is missing" }, { status: 400 });
+  }
 
   try {
-    const { title, description } = await req.json();
-    const updatedTask = await Task.findByIdAndUpdate(taskId, { title, description }, { new: true });
+    const body = await req.json();
+    const updatedTask = await Task.findByIdAndUpdate(taskId, body, { new: true });
 
     if (!updatedTask) {
       return NextResponse.json({ message: "Task not found" }, { status: 404 });
     }
     return NextResponse.json(updatedTask, { status: 200 });
   } catch (error) {
+    console.error("Error updating task:", error);
     return NextResponse.json({ message: "Error updating task" }, { status: 500 });
   }
 }
 
-// DELETE a specific task
-export async function DELETE(req: NextRequest, { params }: { params: { taskId: string } }) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ taskId: string }> }) {
   await connectToDatabase();
-  const { taskId } = params;
+
+  const { taskId } = await context.params; // ✅ Await params since it's a Promise
+
+  if (!taskId) {
+    return NextResponse.json({ message: "Task ID is missing" }, { status: 400 });
+  }
 
   try {
     const deletedTask = await Task.findByIdAndDelete(taskId);
@@ -60,6 +59,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { taskId: s
     }
     return NextResponse.json({ message: "Task deleted successfully" }, { status: 200 });
   } catch (error) {
+    console.error("Error deleting task:", error);
     return NextResponse.json({ message: "Error deleting task" }, { status: 500 });
   }
 }

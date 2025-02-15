@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/config/db';
-import Task from '../../models/Task';
+import Task from '@/app/models/Task';
 
 
 // Create a task
@@ -19,8 +19,10 @@ export async function GET() {
     const tasks = await Task.find();
     return NextResponse.json(tasks, { status: 200 });
   } catch (error) {
+    console.error("Error fetching tasks:", error); // Log the error
     return NextResponse.json({ message: "Error fetching tasks" }, { status: 500 });
   }
+  
 }
 
 export async function DELETE(req: NextRequest) {
@@ -36,6 +38,8 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ message: "Tasks deleted successfully" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: "Error deleting tasks" }, { status: 500 });
+    console.error("Error fetching tasks:", error); // Log the error
+    return NextResponse.json({ message: "Error fetching tasks" }, { status: 500 });
   }
+  
 }

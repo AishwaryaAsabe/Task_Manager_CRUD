@@ -3,14 +3,11 @@ import { useState, useEffect } from "react";
 
 const ViewTask = ({ params }: { params: Promise<{ taskId: string }> }) => {
   const [task, setTask] = useState<{ title: string; description: string } | null>(null);
-  const [taskId, setTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTask = async () => {
       try {
         const resolvedParams = await params; // ✅ Await the params first
-        setTaskId(resolvedParams.taskId); // Store taskId in state
-
         const res = await fetch(`/api/tasks/${resolvedParams.taskId}`);
         const data = await res.json();
         setTask(data);
