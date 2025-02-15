@@ -1,13 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/config/db';
 import Task from '../../models/Task';
 
-// Get all tasks
-export async function GET() {
-  await connectToDatabase();
-  const tasks = await Task.find();
-  return NextResponse.json(tasks);
-}
 
 // Create a task
 export async function POST(req: Request) {
@@ -18,20 +12,30 @@ export async function POST(req: Request) {
   await newTask.save();
   return NextResponse.json(newTask, { status: 201 });
 }
-
-// Bulk delete tasks
-export async function DELETE(req: Request) {
+export async function GET() {
   await connectToDatabase();
-  const { taskIds } = await req.json(); // Expecting an array of IDs
-
-  if (!taskIds || !taskIds.length) {
-    return NextResponse.json({ message: 'No tasks provided for deletion' }, { status: 400 });
+  
+  try {
+    const tasks = await Task.find();
+    return NextResponse.json(tasks, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: "Error fetching tasks" }, { status: 500 });
   }
-
-  await Task.deleteMany({ _id: { $in: taskIds } });
-  return NextResponse.json({ message: 'Tasks deleted successfully' });
 }
 
+export async function DELETE(req: NextRequest) {
+  await connectToDatabase();
+  
+  try {
+    const { taskIds } = await req.json();
+    if (!taskIds || taskIds.length === 0) {
+      return NextResponse.json({ message: "No task IDs provided" }, { status: 400 });
+    }
 
+    await Task.deleteMany({ _id: { $in: taskIds } });
 
-
+    return NextResponse.json({ message: "Tasks deleted successfully" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: "Error deleting tasks" }, { status: 500 });
+  }
+}
